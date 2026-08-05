@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار سورة يس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold: #c9a34e;
+    --gold-light: #e6c878;
+    --teal: #0d4d4a;
+    --teal-dark: #073331;
+    --terracotta: #b5563a;
+    --cream: #f6ecd9;
+    --ink: #2c211a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family: 'Amiri', serif;
+    color: var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(201,163,78,0.15), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(201,163,78,0.15), transparent 40%),
+      linear-gradient(135deg, var(--teal-dark), var(--teal) 55%, #0a3f3c);
+    position: relative;
+    overflow-x:hidden;
+  }
+  /* Andalusian geometric pattern overlay */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(201,163,78,0.06) 0 2px, transparent 2px 40px),
+      repeating-linear-gradient(-45deg, rgba(201,163,78,0.06) 0 2px, transparent 2px 40px);
+    pointer-events:none;
+    z-index:0;
+  }
+  .star-pattern{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    opacity:0.15;
+    pointer-events:none;
+    background-repeat:repeat;
+    background-size: 140px 140px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23e6c878' stroke-width='1.2'%3E%3Cpath d='M70 5 L92 40 L130 40 L100 65 L112 105 L70 82 L28 105 L40 65 L10 40 L48 40 Z'/%3E%3Ccircle cx='70' cy='70' r='60'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .app{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width: 720px;
+  }
+
+  .frame{
+    background: linear-gradient(180deg, var(--cream), #fdf7ea);
+    border-radius: 24px;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 0 6px var(--teal-dark), 0 20px 60px rgba(0,0,0,0.45);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .frame::before, .frame::after{
+    content:"";
+    position:absolute;
+    width:70px; height:70px;
+    border: 3px solid var(--gold);
+    z-index:2;
+  }
+  .frame::before{ top:-3px; right:-3px; border-radius: 0 0 0 100%; border-top:none; border-right:none; opacity:0;}
+
+  .corner{
+    position:absolute; width:46px; height:46px; z-index:3; opacity:0.9;
+  }
+  .corner svg{width:100%; height:100%;}
+  .c-tl{top:8px; left:8px;}
+  .c-tr{top:8px; right:8px; transform:scaleX(-1);}
+  .c-bl{bottom:8px; left:8px; transform:scaleY(-1);}
+  .c-br{bottom:8px; right:8px; transform:scale(-1,-1);}
+
+  .arch-header{
+    background: linear-gradient(180deg, var(--teal), var(--teal-dark));
+    color: var(--gold-light);
+    text-align:center;
+    padding: 22px 20px 26px;
+    position:relative;
+    border-bottom: 3px solid var(--gold);
+  }
+  .arch-header h1{
+    font-family:'Reem Kufi', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing:1px;
+  }
+  .arch-header p{
+    margin-top:6px;
+    font-size:0.95rem;
+    color: var(--gold);
+    opacity:0.9;
+  }
+
+  .progress-wrap{
+    padding: 14px 26px 0;
+  }
+  .dots-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:6px;
+    padding: 4px 6px;
+    background: repeating-linear-gradient(135deg, rgba(13,77,74,0.06) 0 6px, transparent 6px 12px);
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+  }
+  .dot{
+    width:16px; height:16px;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    background: rgba(13,77,74,0.18);
+    transition: all .25s ease;
+    flex: 0 0 auto;
+  }
+  .dot.done{
+    background: var(--gold);
+    box-shadow: 0 0 4px rgba(201,163,78,0.8);
+  }
+  .dot.current{
+    background: var(--terracotta);
+    transform: scale(1.35);
+    box-shadow: 0 0 6px rgba(181,86,58,0.7);
+  }
+  .progress-label{
+    display:flex;
+    justify-content:center;
+    font-size:0.85rem;
+    color: var(--teal-dark);
+    margin-top:8px;
+    font-family:'Reem Kufi', sans-serif;
+  }
+  #helpText{
+    color: var(--terracotta);
+    font-weight:600;
+  }
+
+  .content{
+    padding: 24px 30px 30px;
+    min-height: 340px;
+  }
+
+  .question-box{
+    background: #fff;
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: inset 0 0 0 4px rgba(201,163,78,0.12);
+    margin-bottom: 20px;
+  }
+  .question-num{
+    font-family:'Reem Kufi', sans-serif;
+    color: var(--terracotta);
+    font-size:0.95rem;
+    margin-bottom:8px;
+  }
+  .question-text{
+    font-size: 1.35rem;
+    line-height: 2.1;
+    color: var(--teal-dark);
+    font-weight:700;
+  }
+  .verse{
+    color: var(--terracotta);
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .option{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#fff;
+    border: 2px solid rgba(13,77,74,0.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor:pointer;
+    font-size:1.15rem;
+    line-height:1.9;
+    transition: all .2s ease;
+    text-align:right;
+  }
+  .option:hover{
+    border-color: var(--gold);
+    background: #fffdf5;
+    transform: translateX(-2px);
+  }
+  .option .letter{
+    flex:0 0 auto;
+    width:32px; height:32px;
+    border-radius:50%;
+    background: var(--teal);
+    color: var(--gold-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Reem Kufi', sans-serif;
+    font-size:0.95rem;
+  }
+  .option.selected{
+    border-color: var(--teal);
+    background: #eaf4f3;
+  }
+  .option.correct{
+    border-color:#2f8f4e;
+    background:#e7f6ec;
+  }
+  .option.correct .letter{ background:#2f8f4e; color:#fff;}
+  .option.incorrect{
+    border-color: var(--terracotta);
+    background:#fbeae6;
+  }
+  .option.incorrect .letter{ background:var(--terracotta); color:#fff;}
+  .option.disabled{ cursor:default; }
+
+  .feedback{
+    margin-top:16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family:'Reem Kufi', sans-serif;
+    font-size:1rem;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.correct-fb{ background:#e7f6ec; color:#1e6b3a; border:1px solid #2f8f4e;}
+  .feedback.incorrect-fb{ background:#fbeae6; color:#8a3b28; border:1px solid var(--terracotta);}
+
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 22px;
+  }
+  .btn{
+    font-family:'Reem Kufi', sans-serif;
+    font-size:1.05rem;
+    padding: 12px 28px;
+    border-radius: 999px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(180deg, var(--teal), var(--teal-dark));
+    color: var(--gold-light);
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .btn:hover:not(:disabled){
+    background: linear-gradient(180deg, var(--terracotta), #8f3e29);
+    border-color: var(--gold-light);
+  }
+  .btn:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    background:transparent;
+    color: var(--teal-dark);
+    border: 2px solid rgba(13,77,74,0.3);
+  }
+
+  /* Result screen */
+  .result{
+    text-align:center;
+    padding: 10px 10px 20px;
+  }
+  .result .score-circle{
+    width:180px; height:180px;
+    margin: 10px auto 20px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #fffdf5, #f6ecd9);
+    border: 5px solid var(--gold);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 0 0 8px rgba(13,77,74,0.08);
+  }
+  .score-circle .num{
+    font-family:'Reem Kufi', sans-serif;
+    font-size:2.6rem;
+    color: var(--teal-dark);
+    font-weight:700;
+  }
+  .score-circle .den{
+    font-size:1rem;
+    color: var(--terracotta);
+  }
+  .result h2{
+    font-family:'Reem Kufi', sans-serif;
+    color: var(--teal-dark);
+    font-size:1.4rem;
+    margin-bottom:10px;
+  }
+  .result .msg{
+    font-size:1.2rem;
+    line-height:2;
+    color: var(--ink);
+    max-width:520px;
+    margin: 10px auto 20px;
+  }
+  .result .stats{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-bottom:20px;
+    font-family:'Reem Kufi', sans-serif;
+    font-size:0.95rem;
+    color: var(--teal-dark);
+  }
+  .divider{
+    width:60px; height:3px;
+    background: var(--gold);
+    margin: 14px auto;
+    border-radius:3px;
+  }
+
+  .review-item{
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    line-height: 1.9;
+  }
+  .review-item.correct-fb{ background:#e7f6ec; border:1px solid #2f8f4e; }
+  .review-item.incorrect-fb{ background:#fbeae6; border:1px solid var(--terracotta); }
+  .review-q{ font-weight:700; color: var(--teal-dark); margin-bottom:4px; }
+  .review-a{ color: var(--ink); font-size:0.95rem; }
+
+  .intro{
+    text-align:center;
+    padding: 20px 10px;
+  }
+  .intro h2{
+    font-family:'Reem Kufi', sans-serif;
+    color: var(--teal-dark);
+    font-size:1.3rem;
+    margin-bottom:14px;
+  }
+  .intro p{
+    color: var(--ink);
+    font-size:1.05rem;
+    margin-bottom:18px;
+    line-height:1.9;
+  }
+  .name-input{
+    width:100%;
+    max-width:340px;
+    padding: 14px 18px;
+    border-radius: 999px;
+    border: 2px solid var(--gold);
+    background:#fff;
+    font-family:'Amiri', serif;
+    font-size:1.1rem;
+    text-align:center;
+    color: var(--teal-dark);
+    margin-bottom:20px;
+  }
+  .name-input:focus{ outline:none; border-color: var(--terracotta); }
+
+  #shareCanvas{ display:none; }
+
+  .help-bar{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 16px;
+  }
+  .help-btn{
+    font-family:'Reem Kufi', sans-serif;
+    font-size:0.95rem;
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 2px dashed var(--terracotta);
+    background: #fff8ee;
+    color: var(--terracotta);
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .help-btn:hover:not(:disabled){
+    background: var(--terracotta);
+    color:#fff;
+  }
+  .help-btn:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+    border-style: solid;
+  }
+  .option.removed{
+    opacity:0.35;
+    text-decoration: line-through;
+    pointer-events:none;
+    background:#eee;
+  }
+
+  .footer{
+    text-align:center;
+    background: linear-gradient(180deg, var(--teal-dark), #062725);
+    border-top: 3px solid var(--gold);
+    padding: 16px 20px 18px;
+    color: var(--gold-light);
+  }
+  .footer-line{
+    font-family:'Reem Kufi', sans-serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .footer-phone{
+    font-family:'Reem Kufi', sans-serif;
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    direction: ltr;
+    display:inline-block;
+  }
+  .footer-dua{
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: rgba(246,236,217,0.85);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  @media (max-width:520px){
+    .content{padding:18px 16px 22px;}
+    .question-text{font-size:1.15rem;}
+    .option{font-size:1.02rem; padding:12px;}
+    .arch-header h1{font-size:1.3rem;}
+  }
+</style>
+</head>
+<body>
+<div class="star-pattern"></div>
+<div class="app">
+  <div class="frame">
+    <div class="corner c-tl"><svg viewBox="0 0 46 46"><path d="M2 44 C2 20 20 2 44 2" fill="none" stroke="#c9a34e" stroke-width="3"/><path d="M2 44 C2 26 12 12 26 8" fill="none" stroke="#0d4d4a" stroke-width="2"/></svg></div>
+    <div class="corner c-tr"><svg viewBox="0 0 46 46"><path d="M2 44 C2 20 20 2 44 2" fill="none" stroke="#c9a34e" stroke-width="3"/><path d="M2 44 C2 26 12 12 26 8" fill="none" stroke="#0d4d4a" stroke-width="2"/></svg></div>
+    <div class="corner c-bl"><svg viewBox="0 0 46 46"><path d="M2 44 C2 20 20 2 44 2" fill="none" stroke="#c9a34e" stroke-width="3"/><path d="M2 44 C2 26 12 12 26 8" fill="none" stroke="#0d4d4a" stroke-width="2"/></svg></div>
+    <div class="corner c-br"><svg viewBox="0 0 46 46"><path d="M2 44 C2 20 20 2 44 2" fill="none" stroke="#c9a34e" stroke-width="3"/><path d="M2 44 C2 26 12 12 26 8" fill="none" stroke="#0d4d4a" stroke-width="2"/></svg></div>
+
+    <div class="arch-header">
+      <h1>✦ اختبار سورة يس ✦</h1>
+      <p>25 سؤالاً — 100 درجة — بطراز أندلسي</p>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="dots-row" id="dotsRow"></div>
+      <div class="progress-label">
+        <span id="helpText">🌙 المساعدات المتبقية: 3</span>
+      </div>
+    </div>
+
+    <div class="content" id="content"></div>
+    <canvas id="shareCanvas" width="900" height="1100"></canvas>
+
+    <div class="footer">
+      <div class="footer-line">✦ تصميم وإعداد: أمير أنور ✦</div>
+      <div class="footer-phone">01066227553</div>
+      <div class="footer-dua">اللهم اجعل القرآن العظيم ربيع قلوبنا، ونور صدورنا، وجلاء أحزاننا، وذهاب همومنا وغمومنا، وارزقنا حسن تلاوته وتدبره والعمل به يا رب العالمين</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const rawQuestions = [
+{q:"أكمل الآية الكريمة (40): ﴿لَا الشَّمْسُ يَنْبَغِي لَهَا أَنْ تُدْرِكَ الْقَمَرَ ...............﴾", options:[
+  "وَلَا اللَّيْلُ سَابِقُ النَّهَارِ ۚ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ",
+  "وَلَا النَّهَارُ سَابِقُ اللَّيْلِ ۚ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ",
+  "وَلَا اللَّيْلُ سَابِقُ النَّهَارِ ۖ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ",
+  "وَلَا اللَّيْلُ يُدْرِكُ النَّهَارَ ۚ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (52): ﴿قَالُوا يَا وَيْلَنَا مَنْ بَعَثَنَا مِنْ مَرْقَدِنَا ...............﴾", options:[
+  "هَذَا مَا وَعَدَ الرَّحْمَنُ وَصَدَقَ الْمُرْسَلُونَ",
+  "هَذَا مَا وَعَدَنَا الرَّحْمَنُ وَصَدَقَ الْمُرْسَلُونَ",
+  "هَذَا مَا وَعَدَ اللَّهُ وَصَدَقَ الْمُرْسَلُونَ",
+  "هَذَا مَا وَعَدَ الرَّحْمَنُ وَصَدَقَ النَّبِيُّونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (12): ﴿إِنَّا نَحْنُ نُحْيِي الْمَوْتَى وَنَكْتُبُ مَا قَدَّمُوا وَآثَارَهُمْ ...............﴾", options:[
+  "وَكُلَّ شَيْءٍ أَحْصَيْنَاهُ فِي إِمَامٍ مُبِينٍ",
+  "وَكُلَّ شَيْءٍ أَحْصَيْنَاهُ فِي كِتَابٍ مُبِينٍ",
+  "وَكُلَّ شَيْءٍ كَتَبْنَاهُ فِي إِمَامٍ مُبِينٍ",
+  "وَكُلَّ شَيْءٍ أَحْصَيْنَاهُ فِي لَوْحٍ مُبِينٍ"
+], correct:0},
+{q:"أكمل الآية الكريمة (22): ﴿وَمَا لِيَ لَا أَعْبُدُ الَّذِي فَطَرَنِي ...............﴾", options:[
+  "وَإِلَيْهِ تُرْجَعُونَ",
+  "وَإِلَيْهِ تُحْشَرُونَ",
+  "وَإِلَيْهِ تُبْعَثُونَ",
+  "وَإِلَيْهِ يَرْجِعُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (65): ﴿الْيَوْمَ نَخْتِمُ عَلَى أَفْوَاهِهِمْ وَتُكَلِّمُنَا أَيْدِيهِمْ ...............﴾", options:[
+  "وَتَشْهَدُ أَرْجُلُهُمْ بِمَا كَانُوا يَكْسِبُونَ",
+  "وَتَشْهَدُ جُلُودُهُمْ بِمَا كَانُوا يَعْمَلُونَ",
+  "وَتَشْهَدُ أَرْجُلُهُمْ بِمَا كَانُوا يَعْمَلُونَ",
+  "وَتَشْهَدُ أَلْسِنَتُهُمْ بِمَا كَانُوا يَكْسِبُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (18): ﴿قَالُوا إِنَّا تَطَيَّرْنَا بِكُمْ ۖ لَئِنْ لَمْ تَنْتَهُوا ...............﴾", options:[
+  "لَنَرْجُمَنَّكُمْ وَلَيَمَسَّنَّكُمْ مِنَّا عَذَابٌ أَلِيمٌ",
+  "لَنَرْجُمَنَّكُمْ وَلَيُمَسَّنَّكُمْ مِنَّا عَذَابٌ أَلِيمٌ",
+  "لَنَقْتُلَنَّكُمْ وَلَيَمَسَّنَّكُمْ مِنَّا عَذَابٌ أَلِيمٌ",
+  "لَنَرْجُمَنَّكُمْ وَلَيُصِيبَنَّكُمْ مِنَّا عَذَابٌ أَلِيمٌ"
+], correct:0},
+{q:"أكمل الآية الكريمة (35): ﴿لِيَأْكُلُوا مِنْ ثَمَرِهِ وَمَا عَمِلَتْهُ أَيْدِيهِمْ ...............﴾", options:[
+  "أَفَلَا يَشْكُرُونَ",
+  "أَفَلَا يُؤْمِنُونَ",
+  "أَفَلَا يَعْقِلُونَ",
+  "أَفَلَا يَذَّكَّرُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (69): ﴿وَمَا عَلَّمْنَاهُ الشِّعْرَ وَمَا يَنْبَغِي لَهُ ...............﴾", options:[
+  "إِنْ هُوَ إِلَّا ذِكْرٌ وَقُرْآنٌ مُبِينٌ",
+  "إِنْ هُوَ إِلَّا ذِكْرٌ مُبِينٌ",
+  "إِنْ هُوَ إِلَّا قُرْآنٌ كَرِيمٌ",
+  "إِنْ هُوَ إِلَّا ذِكْرٌ وَكِتَابٌ مُبِينٌ"
+], correct:0},
+{q:"أكمل الآية الكريمة (53): ﴿إِنْ كَانَتْ إِلَّا صَيْحَةً وَاحِدَةً ...............﴾", options:[
+  "فَإِذَا هُمْ جَمِيعٌ لَدَيْنَا مُحْضَرُونَ",
+  "فَإِذَا هُمْ جَمِيعًا لَدَيْنَا مُحْضَرُونَ",
+  "فَإِذَا هُمْ لَدَيْنَا جَمِيعٌ مُحْضَرُونَ",
+  "فَإِذَا هُمْ جَمِيعٌ إِلَيْنَا مُحْضَرُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (81): ﴿أَوَلَيْسَ الَّذِي خَلَقَ السَّمَاوَاتِ وَالْأَرْضَ بِقَادِرٍ عَلَى أَنْ يَخْلُقَ مِثْلَهُمْ ...............﴾", options:[
+  "بَلَى وَهُوَ الْخَلَّاقُ الْعَلِيمُ",
+  "بَلَى وَهُوَ الْعَزِيزُ الْعَلِيمُ",
+  "بَلَى وَهُوَ الْخَلَّاقُ الْحَكِيمُ",
+  "بَلَى وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ"
+], correct:0},
+{q:"أكمل الآية الكريمة (30): ﴿يَا حَسْرَةً عَلَى الْعِبَادِ ...............﴾", options:[
+  "مَا يَأْتِيهِمْ مِنْ رَسُولٍ إِلَّا كَانُوا بِهِ يَسْتَهْزِئُونَ",
+  "مَا جَاءَهُمْ مِنْ رَسُولٍ إِلَّا كَانُوا بِهِ يَسْتَهْزِئُونَ",
+  "مَا يَأْتِيهِمْ مِنْ نَبِيٍّ إِلَّا كَانُوا بِهِ يَسْتَهْزِئُونَ",
+  "مَا يَأْتِيهِمْ رَسُولٌ إِلَّا كَانُوا بِهِ يَسْتَهْزِئُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (45): ﴿وَإِذَا قِيلَ لَهُمُ اتَّقُوا مَا بَيْنَ أَيْدِيكُمْ وَمَا خَلْفَكُمْ ...............﴾", options:[
+  "لَعَلَّكُمْ تُرْحَمُونَ",
+  "لَعَلَّهُمْ يُرْحَمُونَ",
+  "لَعَلَّكُمْ تَشْكُرُونَ",
+  "لَعَلَّكُمْ تُفْلِحُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (58): ﴿لَهُمْ فِيهَا فَاكِهَةٌ وَلَهُمْ مَا يَدَّعُونَ ۝ ...............﴾", options:[
+  "سَلَامٌ قَوْلًا مِنْ رَبٍّ رَحِيمٍ",
+  "سَلَامٌ مِنْ رَبٍّ رَحِيمٍ",
+  "سَلَامًا قَوْلًا مِنْ رَبٍّ رَحِيمٍ",
+  "سَلَامٌ قَوْلًا مِنَ اللَّهِ"
+], correct:0},
+{q:"أكمل الآية الكريمة (77): ﴿وَضَرَبَ لَنَا مَثَلًا وَنَسِيَ خَلْقَهُ ...............﴾", options:[
+  "قَالَ مَنْ يُحْيِي الْعِظَامَ وَهِيَ رَمِيمٌ",
+  "قَالَ مَنْ يُحْيِي الْعِظَامَ وَهِيَ بَالِيَةٌ",
+  "قَالَ مَنْ يُحْيِي الْعِظَامَ بَعْدَ مَوْتِهَا",
+  "قَالَ مَنْ يُحْيِي الْعِظَامَ إِذَا رَمَّتْ"
+], correct:0},
+{q:"أكمل الآية الكريمة (83): ﴿فَسُبْحَانَ الَّذِي بِيَدِهِ مَلَكُوتُ كُلِّ شَيْءٍ ...............﴾", options:[
+  "وَإِلَيْهِ تُرْجَعُونَ",
+  "وَإِلَيْهِ تَرْجِعُونَ",
+  "وَإِلَيْهِ يُرْجَعُونَ",
+  "وَإِلَيْهِ تُحْشَرُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (34): ﴿وَجَعَلْنَا فِيهَا جَنَّاتٍ مِنْ نَخِيلٍ وَأَعْنَابٍ ...............﴾", options:[
+  "وَفَجَّرْنَا فِيهَا مِنَ الْعُيُونِ",
+  "وَفَجَّرْنَا مِنْهَا الْعُيُونَ",
+  "وَفَجَّرْنَا فِيهَا الْعُيُونَ",
+  "وَفَجَّرْنَا مِنْهَا مِنَ الْعُيُونِ"
+], correct:0},
+{q:"أكمل الآية الكريمة (70): ﴿لِيُنْذِرَ مَنْ كَانَ حَيًّا ...............﴾", options:[
+  "وَيَحِقَّ الْقَوْلُ عَلَى الْكَافِرِينَ",
+  "وَيَحِقُّ الْقَوْلُ عَلَى الْكَافِرِينَ",
+  "وَيَحِقَّ الْوَعْدُ عَلَى الْكَافِرِينَ",
+  "وَيَحِقَّ الْقَوْلُ لِلْكَافِرِينَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (25): ﴿إِنِّي آمَنْتُ بِرَبِّكُمْ ...............﴾", options:[
+  "فَاسْمَعُونِ",
+  "فَاتَّبِعُونِ",
+  "فَاعْبُدُونِ",
+  "فَاشْهَدُوا"
+], correct:0},
+{q:"أكمل الآية الكريمة (43): ﴿وَإِنْ نَشَأْ نُغْرِقْهُمْ فَلَا صَرِيخَ لَهُمْ ...............﴾", options:[
+  "وَلَا هُمْ يُنْقَذُونَ",
+  "وَلَا هُمْ يَنْصُرُونَ",
+  "وَلَا هُمْ يُنْجَوْنَ",
+  "وَلَا هُمْ يُرْجَعُونَ"
+], correct:0},
+{q:"أكمل الآية الكريمة (79): ﴿قُلْ يُحْيِيهَا الَّذِي أَنْشَأَهَا أَوَّلَ مَرَّةٍ ...............﴾", options:[
+  "وَهُوَ بِكُلِّ خَلْقٍ عَلِيمٌ",
+  "وَهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ",
+  "وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+  "وَهُوَ الْخَلَّاقُ الْعَلِيمُ"
+], correct:0},
+{q:"[سؤال عام] سورة يس مكية أم مدنية؟", options:[
+  "مكية",
+  "مدنية",
+  "نصفها مكي ونصفها مدني",
+  "مختلف فيها بين العلماء"
+], correct:0},
+{q:"[سؤال عام] كم عدد آيات سورة يس؟", options:[
+  "83 آية",
+  "78 آية",
+  "90 آية",
+  "75 آية"
+], correct:0},
+{q:"[سؤال عام] ما ترتيب سورة يس في المصحف الشريف؟", options:[
+  "السورة رقم 36",
+  "السورة رقم 38",
+  "السورة رقم 32",
+  "السورة رقم 40"
+], correct:0},
+{q:"[سؤال عام] لُقبت سورة يس بلقب مشهور، ما هو؟", options:[
+  "قلب القرآن",
+  "عروس القرآن",
+  "سنام القرآن",
+  "قلب الإيمان"
+], correct:0},
+{q:"[سؤال عام] كم عدد الرسل الذين أُرسلوا إلى أهل القرية في قصة أصحاب القرية بسورة يس؟", options:[
+  "ثلاثة رسل",
+  "رسولان اثنان",
+  "رسول واحد",
+  "أربعة رسل"
+], correct:0}
+];
+
+// shuffle options for each question once, keep track of correct index
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+const questions = rawQuestions.map(item=>{
+  const optWithIndex = item.options.map((text,idx)=>({text, isCorrect: idx===item.correct}));
+  const shuffled = shuffle(optWithIndex);
+  return {
+    q: item.q,
+    options: shuffled.map(o=>o.text),
+    correct: shuffled.findIndex(o=>o.isCorrect)
+  };
+});
+
+const TOTAL = questions.length;
+const POINTS_PER_Q = 100 / TOTAL;
+
+let current = 0;
+let score = 0;
+let selected = null;
+let answered = false;
+const userAnswers = [];
+let helpsRemaining = 3;
+let userName = '';
+let quizStarted = false;
+
+const content = document.getElementById('content');
+const dotsRow = document.getElementById('dotsRow');
+const helpText = document.getElementById('helpText');
+const progressWrap = document.getElementById('progressWrap');
+const letters = ['أ','ب','ج','د'];
+
+function updateHelpText(){
+  helpText.textContent = `🌙 المساعدات المتبقية: ${helpsRemaining}`;
+}
+
+function buildDots(){
+  dotsRow.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot-' + i;
+    dotsRow.appendChild(d);
+  }
+}
+
+function updateDots(){
+  for(let i=0;i<TOTAL;i++){
+    const d = document.getElementById('dot-' + i);
+    if(!d) continue;
+    d.classList.remove('done','current');
+    if(i < current) d.classList.add('done');
+    else if(i === current) d.classList.add('current');
+  }
+}
+
+function renderIntro(){
+  progressWrap.style.display = 'none';
+  content.innerHTML = `
+    <div class="intro">
+      <h2>✦ بسم الله نبدأ ✦</h2>
+      <p>قبل أن تبدأ اختبار سورة يس، اكتب اسمك ليظهر في نتيجتك النهائية:</p>
+      <input type="text" id="nameInput" class="name-input" placeholder="اكتب اسمك هنا">
+      <div class="controls" style="justify-content:center;">
+        <button class="btn" onclick="startQuiz()">ابدأ الاختبار ←</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('nameInput').focus();
+}
+
+function startQuiz(){
+  const val = document.getElementById('nameInput').value.trim();
+  userName = val || 'الطالب';
+  quizStarted = true;
+  progressWrap.style.display = 'block';
+  buildDots();
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered = false;
+  selected = null;
+  const item = questions[current];
+
+  updateDots();
+  updateHelpText();
+
+  let optionsHtml = item.options.map((opt,i)=>`
+    <div class="option" data-idx="${i}" onclick="selectOption(${i})">
+      <span class="letter">${letters[i]}</span>
+      <span class="opt-text">${opt}</span>
+    </div>
+  `).join('');
+
+  const helpBtnHtml = helpsRemaining > 0
+    ? `<div class="help-bar"><button class="help-btn" id="helpBtn" onclick="useHelp()">🌙 استخدام مساعدة: حذف إجابة خاطئة (${helpsRemaining} متبقية)</button></div>`
+    : '';
+
+  content.innerHTML = `
+    <div class="question-box">
+      <div class="question-num">اختر الإجابة الصحيحة</div>
+      <div class="question-text">${item.q}</div>
+    </div>
+    ${helpBtnHtml}
+    <div class="options" id="optionsWrap">${optionsHtml}</div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <button class="btn btn-ghost" id="confirmBtn" onclick="confirmAnswer()" disabled>تأكيد الإجابة</button>
+      <button class="btn" id="nextBtn" onclick="nextQuestion()" style="display:none;">
+        ${current === TOTAL-1 ? 'عرض النتيجة النهائية' : 'السؤال التالي ←'}
+      </button>
+    </div>
+  `;
+}
+
+function useHelp(){
+  if(helpsRemaining <= 0 || answered) return;
+  const item = questions[current];
+  const wrongIndices = item.options
+    .map((_,i)=>i)
+    .filter(i => i !== item.correct && !document.querySelector(`.option[data-idx="${i}"]`).classList.contains('removed'));
+  if(wrongIndices.length === 0) return;
+
+  const pick = wrongIndices[Math.floor(Math.random()*wrongIndices.length)];
+  const el = document.querySelector(`.option[data-idx="${pick}"]`);
+  el.classList.add('removed');
+  el.onclick = null;
+
+  helpsRemaining--;
+  updateHelpText();
+
+  const btn = document.getElementById('helpBtn');
+  if(helpsRemaining <= 0){
+    const bar = document.querySelector('.help-bar');
+    if(bar) bar.remove();
+  } else if(btn){
+    btn.textContent = `🌙 استخدام مساعدة: حذف إجابة خاطئة (${helpsRemaining} متبقية)`;
+  }
+}
+
+function selectOption(idx){
+  if(answered) return;
+  selected = idx;
+  document.querySelectorAll('.option').forEach(el=>el.classList.remove('selected'));
+  document.querySelector(`.option[data-idx="${idx}"]`).classList.add('selected');
+  document.getElementById('confirmBtn').disabled = false;
+}
+
+function confirmAnswer(){
+  if(selected === null || answered) return;
+  answered = true;
+  const item = questions[current];
+  const isCorrect = selected === item.correct;
+  if(isCorrect) score += POINTS_PER_Q;
+  userAnswers.push({idx:current, correct:isCorrect, chosen:selected});
+
+  document.querySelectorAll('.option').forEach((el,i)=>{
+    el.classList.add('disabled');
+    el.onclick = null;
+    if(i === selected) el.classList.add('selected');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  fb.classList.add('correct-fb');
+  fb.textContent = '✔ تم تسجيل إجابتك';
+
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current >= TOTAL){
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+let lastResult = null;
+
+function showResult(){
+  updateDots();
+  progressWrap.style.display = 'none';
+
+  const finalScore = Math.round(score);
+  const correctCount = userAnswers.filter(a=>a.correct).length;
+
+  let title, msg, emoji;
+  if(finalScore >= 90){
+    emoji = '🌟';
+    title = 'ممتاز، بارك الله فيك!';
+    msg = 'حفظٌ متقن وفهمٌ عميق لآيات سورة يس. أنت على الطريق الصحيح، فاستمر في المراجعة الدائمة، وجعل الله هذه السورة نوراً لك في الدنيا والآخرة.';
+  } else if(finalScore >= 70){
+    emoji = '✨';
+    title = 'جيد جدًا، أحسنت!';
+    msg = 'نتيجة طيبة تدل على حفظ جيد. راجع الآيات التي أخطأت فيها مرة أخرى بتمعن، فبقليل من المراجعة تصل إلى الإتقان الكامل بإذن الله.';
+  } else if(finalScore >= 50){
+    emoji = '📖';
+    title = 'جيد، وتحتاج إلى مزيد من المراجعة';
+    msg = 'بداية طيبة، لكن سورة يس تستحق منك وقتاً أطول في الحفظ والتدبر. اقرأها بترتيل واستمع إليها من قارئ متقن، وستجد تحسناً ملحوظاً في المرة القادمة.';
+  } else {
+    emoji = '🕌';
+    title = 'لا بأس، البداية دائماً هي الأصعب';
+    msg = 'لا تحزن، فكل حافظ للقرآن بدأ من الصفر. خصص وقتاً يومياً لتلاوة سورة يس وتكرارها، وستجد نفسك قريباً تحفظها عن ظهر قلب بإذن الله تعالى.';
+  }
+
+  lastResult = {finalScore, correctCount, title, msg, emoji};
+
+  const reviewHtml = userAnswers.map(ans=>{
+    const item = questions[ans.idx];
+    const rowClass = ans.correct ? 'correct-fb' : 'incorrect-fb';
+    const yourAnswer = `(${letters[ans.chosen]}) ${item.options[ans.chosen]}`;
+    const correctAnswer = `(${letters[item.correct]}) ${item.options[item.correct]}`;
+    return `
+      <div class="review-item ${rowClass}">
+        <div class="review-q">${ans.idx+1}. ${item.q}</div>
+        <div class="review-a">إجابتك: ${yourAnswer}</div>
+        ${ans.correct ? '' : `<div class="review-a">الإجابة الصحيحة: ${correctAnswer}</div>`}
+      </div>
+    `;
+  }).join('');
+
+  content.innerHTML = `
+    <div class="result" id="resultMain">
+      <p style="font-family:'Reem Kufi', sans-serif; color:var(--terracotta); margin-bottom:6px;">نتيجة الطالب: ${userName}</p>
+      <div class="score-circle">
+        <div class="num">${finalScore}</div>
+        <div class="den">من 100</div>
+      </div>
+      <h2>${emoji} ${title} ${emoji}</h2>
+      <div class="stats">
+        <span>الإجابات الصحيحة: ${correctCount} / ${TOTAL}</span>
+      </div>
+      <div class="divider"></div>
+      <p class="msg">${msg}</p>
+      <div class="controls" style="justify-content:center; flex-wrap:wrap; gap:10px;">
+        <button class="btn" onclick="restartQuiz()">إعادة الاختبار من جديد</button>
+        <button class="btn btn-ghost" onclick="toggleReview()">عرض الإجابات الصحيحة</button>
+        <button class="btn" onclick="shareResultImage()">📤 نشر نتيجتك كصورة</button>
+      </div>
+      <div id="reviewList" style="display:none; text-align:right; margin-top:20px;">
+        ${reviewHtml}
+        <div class="controls" style="justify-content:center; margin-top:14px;">
+          <button class="btn btn-ghost" onclick="toggleReview()">↩ رجوع</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleReview(){
+  const el = document.getElementById('reviewList');
+  const main = document.getElementById('resultMain');
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'block' : 'none';
+  // scroll back to top of result when returning
+  if(!isHidden) main.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '';
+  let lines = [];
+  for(let n=0; n<words.length; n++){
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if(metrics.width > maxWidth && n > 0){
+      lines.push(line);
+      line = words[n] + ' ';
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line);
+  lines.forEach((l,i)=>{
+    ctx.fillText(l.trim(), x, y + i*lineHeight);
+  });
+  return lines.length;
+}
+
+function shareResultImage(){
+  if(!lastResult) return;
+  const canvas = document.getElementById('shareCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // background
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0, '#073331');
+  grad.addColorStop(1, '#0d4d4a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+
+  // decorative frame
+  ctx.strokeStyle = '#c9a34e';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(24,24,W-48,H-48);
+  ctx.lineWidth = 2;
+  ctx.strokeRect(40,40,W-80,H-80);
+
+  // inner cream panel
+  ctx.fillStyle = '#f6ecd9';
+  ctx.fillRect(60,60,W-120,H-120);
+  ctx.strokeStyle = '#c9a34e';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(60,60,W-120,H-120);
+
+  ctx.textAlign = 'center';
+  ctx.direction = 'rtl';
+
+  // title
+  ctx.fillStyle = '#073331';
+  ctx.font = 'bold 42px Arial';
+  ctx.fillText('اختبار سورة يس', W/2, 150);
+
+  ctx.font = '26px Arial';
+  ctx.fillStyle = '#b5563a';
+  ctx.fillText(`نتيجة: ${userName}`, W/2, 200);
+
+  // score circle
+  ctx.beginPath();
+  ctx.arc(W/2, 360, 130, 0, Math.PI*2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = '#c9a34e';
+  ctx.stroke();
+
+  ctx.fillStyle = '#073331';
+  ctx.font = 'bold 90px Arial';
+  ctx.fillText(String(lastResult.finalScore), W/2, 385);
+  ctx.font = '24px Arial';
+  ctx.fillStyle = '#b5563a';
+  ctx.fillText('من 100', W/2, 425);
+
+  // title/emoji
+  ctx.font = 'bold 34px Arial';
+  ctx.fillStyle = '#073331';
+  ctx.fillText(`${lastResult.emoji} ${lastResult.title} ${lastResult.emoji}`, W/2, 540);
+
+  ctx.font = '24px Arial';
+  ctx.fillStyle = '#0d4d4a';
+  ctx.fillText(`الإجابات الصحيحة: ${lastResult.correctCount} / ${TOTAL}`, W/2, 585);
+
+  // message
+  ctx.font = '22px Arial';
+  ctx.fillStyle = '#2c211a';
+  wrapText(ctx, lastResult.msg, W/2, 660, W-220, 34);
+
+  // divider
+  ctx.strokeStyle = '#c9a34e';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(W/2-40, 820);
+  ctx.lineTo(W/2+40, 820);
+  ctx.stroke();
+
+  // footer credit
+  ctx.font = '20px Arial';
+  ctx.fillStyle = '#b5563a';
+  ctx.fillText('تصميم وإعداد: أمير أنور  |  01066227553', W/2, 870);
+
+  ctx.font = '18px Arial';
+  ctx.fillStyle = '#0d4d4a';
+  wrapText(ctx, 'اللهم اجعل القرآن ربيع قلوبنا ونور صدورنا', W/2, 910, W-220, 26);
+
+  const dataUrl = canvas.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.download = `نتيجة-اختبار-يس-${userName}.png`;
+  link.href = dataUrl;
+  link.click();
+}
+
+function restartQuiz(){
+  current = 0;
+  score = 0;
+  userAnswers.length = 0;
+  helpsRemaining = 3;
+  progressWrap.style.display = 'block';
+  buildDots();
+  renderQuestion();
+}
+
+renderIntro();
+</script>
+</body>
+</html>
