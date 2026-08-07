@@ -6,6 +6,7 @@
 <title>اختبار سورة يس</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{
     --gold: #c9a34e;
@@ -296,6 +297,10 @@
     color: var(--gold-light);
     border-color: var(--gold);
   }
+  .btn.loading{
+    opacity:0.7;
+    pointer-events:none;
+  }
 
   .result{
     text-align:center;
@@ -406,8 +411,6 @@
     margin-bottom:20px;
   }
   .name-input:focus{ outline:none; border-color: var(--terracotta); }
-
-  #shareCanvas{ display:none; }
 
   .help-bar{
     display:flex;
@@ -550,7 +553,6 @@
     </div>
 
     <div class="content" id="content"></div>
-    <canvas id="shareCanvas" width="900" height="1100"></canvas>
 
     <div class="footer">
       <div class="footer-line">✦ تصميم وإعداد: أمير أنور ✦</div>
@@ -801,7 +803,6 @@ function buildDots(){
   }
 }
 
-/* أثناء الاختبار: كلها ذهبية. النتيجة النهائية فقط تفرّق */
 function updateDots(forResult){
   for(let i = 0; i < TOTAL; i++){
     const d = document.getElementById('dot-' + i);
@@ -942,7 +943,7 @@ function selectOption(idx){
   document.getElementById('confirmBtn').disabled = false;
 }
 
-/* ========== تأكيد الإجابة — بدون كشف الصواب والخطأ ========== */
+/* ========== تأكيد الإجابة ========== */
 function confirmAnswer(){
   if(selected === null || answered) return;
   answered = true;
@@ -953,7 +954,6 @@ function confirmAnswer(){
   if(isCorrect) score += POINTS_PER_Q;
   userAnswers.push({idx: current, correct: isCorrect, chosen: selected});
 
-  /* قفل كل الخيارات بدون كشف ألوان الصواب/الخطأ */
   document.querySelectorAll('.option').forEach((el, i) => {
     el.onclick = null;
     if(i === selected){
@@ -964,7 +964,6 @@ function confirmAnswer(){
     }
   });
 
-  /* رسالة محايدة فقط */
   const fb = document.getElementById('feedback');
   fb.classList.add('show', 'neutral-fb');
   fb.innerHTML = '✔ تم تسجيل إجابتك — ستعرف نتيجتك في النهاية';
@@ -989,7 +988,6 @@ let lastResult = null;
 function showResult(){
   detachKeyHandler();
 
-  /* تحديث النقاط — الآن نفرّق بين صحيح وخاطئ */
   updateDots(true);
   progressWrap.style.display = 'none';
 
@@ -1018,7 +1016,6 @@ function showResult(){
 
   lastResult = {finalScore, correctCount, wrongCount, title, msg, emoji};
 
-  /* مراجعة الإجابات مع كشف الصحيح والخاطئ */
   const reviewHtml = userAnswers.map(ans => {
     const item = questions[ans.idx];
     const rowClass = ans.correct ? 'correct-fb' : 'incorrect-fb';
@@ -1052,7 +1049,7 @@ function showResult(){
       <div class="controls" style="justify-content:center; flex-wrap:wrap; gap:10px;">
         <button class="btn" onclick="restartQuiz()">🔄 إعادة الاختبار</button>
         <button class="btn btn-ghost" onclick="toggleReview()">📋 مراجعة الإجابات</button>
-        <button class="btn" onclick="shareResultImage()">📤 تحميل الصورة</button>
+        <button class="btn" id="pdfBtn" onclick="downloadQuestionsPDF()">📄 تحميل الأسئلة PDF</button>
       </div>
       <div id="reviewList" style="display:none; text-align:right; margin-top:20px;">
         ${reviewHtml}
@@ -1072,109 +1069,104 @@ function toggleReview(){
   if(!isHidden) main.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-/* ========== مشاركة كصورة ========== */
-function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight){
-  const words = text.split(' ');
-  let line = '';
-  let lineCount = 0;
-  for(let n = 0; n < words.length; n++){
-    const testLine = line + words[n] + ' ';
-    if(ctx.measureText(testLine).width > maxWidth && n > 0){
-      ctx.fillText(line.trim(), x, y + lineCount * lineHeight);
-      line = words[n] + ' ';
-      lineCount++;
-    } else {
-      line = testLine;
-    }
+/* ========== تحميل الأسئلة كملف PDF ========== */
+function downloadQuestionsPDF(){
+  const btn = document.getElementById('pdfBtn');
+  if(!btn) return;
+  btn.classList.add('loading');
+  btn.textContent = '⏳ جارٍ تجهيز الملف...';
+
+  /* بناء عنصر HTML مؤقت لتحويله إلى PDF */
+  const pdfContainer = document.createElement('div');
+  pdfContainer.setAttribute('dir', 'rtl');
+  pdfContainer.style.cssText = `
+    position: fixed;
+    top: -9999px;
+    left: 0;
+    width: 210mm;
+    padding: 18mm 16mm;
+    background: #fff;
+    font-family: 'Amiri', 'Traditional Arabic', 'Times New Roman', serif;
+    color: #2c211a;
+    line-height: 2;
+    font-size: 13px;
+  `;
+
+  /* بناء محتوى الأسئلة */
+  let questionsHTML = '';
+  for(let i = 0; i < rawQuestions.length; i++){
+    const item = rawQuestions[i];
+    const correctText = item.options[item.correct];
+
+    questionsHTML += `
+      <div style="margin-bottom: 14px; page-break-inside: avoid;">
+        <div style="font-weight: bold; color: #073331; font-size: 14px; margin-bottom: 4px; line-height: 2.2;">
+          ${i + 1}. ${item.q}
+        </div>
+        <div style="padding-right: 16px;">
+          ${item.options.map((opt, oi) => {
+            const isCorrect = oi === item.correct;
+            return `<div style="
+              padding: 2px 0;
+              color: ${isCorrect ? '#1e6b3a' : '#2c211a'};
+              font-weight: ${isCorrect ? 'bold' : 'normal'};
+            ">${isCorrect ? '✔ ' : '&nbsp;&nbsp;&nbsp;'}${opt}</div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${i < rawQuestions.length - 1 ? '<div style="border-bottom: 1px dashed #e0d5c0; margin: 10px 0;"></div>' : ''}
+    `;
   }
-  ctx.fillText(line.trim(), x, y + lineCount * lineHeight);
-  return lineCount + 1;
-}
 
-function shareResultImage(){
-  if(!lastResult) return;
-  const canvas = document.getElementById('shareCanvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  pdfContainer.innerHTML = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="font-size: 22px; font-weight: bold; color: #073331; margin-bottom: 6px;">
+        ✦ أسئلة اختبار سورة يس ✦
+      </div>
+      <div style="font-size: 14px; color: #b5563a; margin-bottom: 4px;">
+        25 سؤالاً مع الإجابات الصحيحة
+      </div>
+      <div style="font-size: 12px; color: #888; margin-bottom: 10px;">
+        تصميم وإعداد: أمير أنور — 01066227553
+      </div>
+      <div style="width: 80px; height: 2px; background: #c9a34e; margin: 10px auto;"></div>
+      <div style="font-size: 11px; color: #999; margin-bottom: 16px;">
+        (الإجابة الصحيحة مُشار إليها بعلامة ✔ باللون الأخضر)
+      </div>
+    </div>
+    ${questionsHTML}
+    <div style="border-top: 2px solid #c9a34e; margin-top: 24px; padding-top: 14px; text-align: center;">
+      <div style="font-size: 12px; color: #888; margin-bottom: 8px;">
+        ✦  تصميم وإعداد: أمير أنور محمد ✦
+      </div>
+      <div style="font-size: 11px; color: #aaa; direction: ltr;">01066227553</div>
+      <div style="font-size: 11px; color: #999; margin-top: 8px; max-width: 400px; margin-left: auto; margin-right: auto;">
+        اللهم اجعل القرآن العظيم ربيع قلوبنا ونور صدورنا وجلاء أحزاننا
+      </div>
+    </div>
+  `;
 
-  const grad = ctx.createLinearGradient(0, 0, W, H);
-  grad.addColorStop(0, '#073331');
-  grad.addColorStop(1, '#0d4d4a');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  document.body.appendChild(pdfContainer);
 
-  ctx.strokeStyle = '#c9a34e';
-  ctx.lineWidth = 8;
-  ctx.strokeRect(24, 24, W - 48, H - 48);
-  ctx.lineWidth = 2;
-  ctx.strokeRect(40, 40, W - 80, H - 80);
+  const opt = {
+    margin:       [8, 8, 8, 8],
+    filename:     'أسئلة-اختبار-سورة-يس.pdf',
+    image:        {type: 'jpeg', quality: 0.98},
+    html2canvas:  {scale: 2, useCORS: true, letterRendering: true},
+    jsPDF:        {unit: 'mm', format: 'a4', orientation: 'portrait'},
+    pagebreak:    {mode: ['avoid-all', 'css', 'legacy']}
+  };
 
-  ctx.fillStyle = '#f6ecd9';
-  ctx.fillRect(60, 60, W - 120, H - 120);
-  ctx.strokeStyle = '#c9a34e';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(60, 60, W - 120, H - 120);
-
-  ctx.textAlign = 'center';
-
-  ctx.fillStyle = '#073331';
-  ctx.font = 'bold 38px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillText('اختبار سورة يس', W / 2, 150);
-
-  ctx.font = '26px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#b5563a';
-  ctx.fillText('نتيجة: ' + userName, W / 2, 200);
-
-  ctx.beginPath();
-  ctx.arc(W / 2, 360, 130, 0, Math.PI * 2);
-  ctx.fillStyle = '#ffffff';
-  ctx.fill();
-  ctx.lineWidth = 8;
-  ctx.strokeStyle = '#c9a34e';
-  ctx.stroke();
-
-  ctx.fillStyle = '#073331';
-  ctx.font = 'bold 85px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillText(String(lastResult.finalScore), W / 2, 385);
-  ctx.font = '24px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#b5563a';
-  ctx.fillText('من 100', W / 2, 425);
-
-  ctx.font = 'bold 30px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#073331';
-  ctx.fillText(lastResult.title, W / 2, 535);
-
-  ctx.font = '22px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#1e6b3a';
-  ctx.fillText('صحيحة: ' + lastResult.correctCount + ' / ' + TOTAL, W / 2 - 140, 580);
-  ctx.fillStyle = '#8a3b28';
-  ctx.fillText('خاطئة: ' + lastResult.wrongCount + ' / ' + TOTAL, W / 2 + 140, 580);
-
-  ctx.font = '21px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#2c211a';
-  wrapCanvasText(ctx, lastResult.msg, W / 2, 660, W - 240, 34);
-
-  ctx.strokeStyle = '#c9a34e';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(W / 2 - 40, 820);
-  ctx.lineTo(W / 2 + 40, 820);
-  ctx.stroke();
-
-  ctx.font = '20px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#b5563a';
-  ctx.fillText('تصميم وإعداد: أمير أنور  |  01066227553', W / 2, 870);
-
-  ctx.font = '18px Arial, "Segoe UI", Tahoma, sans-serif';
-  ctx.fillStyle = '#0d4d4a';
-  wrapCanvasText(ctx, 'اللهم اجعل القرآن ربيع قلوبنا ونور صدورنا', W / 2, 920, W - 240, 28);
-  wrapCanvasText(ctx, 'وجلاء أحزاننا وذهاب همومنا وغمومنا', W / 2, 948, W - 240, 28);
-
-  const dataUrl = canvas.toDataURL('image/png');
-  const link = document.createElement('a');
-  link.download = 'نتيجة-اختبار-يس-' + userName + '.png';
-  link.href = dataUrl;
-  link.click();
+  html2pdf().set(opt).from(pdfContainer).save().then(function(){
+    document.body.removeChild(pdfContainer);
+    btn.classList.remove('loading');
+    btn.textContent = '📄 تحميل الأسئلة PDF';
+  }).catch(function(){
+    document.body.removeChild(pdfContainer);
+    btn.classList.remove('loading');
+    btn.textContent = '📄 تحميل الأسئلة PDF';
+    alert('حدث خطأ أثناء تحميل الملف، حاول مرة أخرى');
+  });
 }
 
 /* ========== إعادة الاختبار ========== */
