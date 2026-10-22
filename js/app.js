@@ -412,7 +412,7 @@ function downloadQuestionsPDF(){
         ✦ أسئلة اختبار ${SURAH_LABEL} ✦
       </div>
       <div style="font-size: 14px; color: #b5563a; margin-bottom: 4px;">
-        25 سؤالاً مع الإجابات الصحيحة
+        ${TOTAL} سؤالاً مع الإجابات الصحيحة
       </div>
       <div style="font-size: 12px; color: #888; margin-bottom: 10px;">
         تصميم وإعداد: أمير أنور — 01066227553
@@ -438,7 +438,7 @@ function downloadQuestionsPDF(){
 
   const opt = {
     margin:       [8, 8, 8, 8],
-    filename:     'أسئلة-اختبار-${SURAH_SLUG}.pdf',
+    filename:     `أسئلة-اختبار-${SURAH_SLUG}.pdf`,
     image:        {type: 'jpeg', quality: 0.98},
     html2canvas:  {scale: 2, useCORS: true, letterRendering: true},
     jsPDF:        {unit: 'mm', format: 'a4', orientation: 'portrait'},
