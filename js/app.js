@@ -1,4 +1,7 @@
 /* ========== بيانات الأسئلة ========== */
+const SURAH_NAME = window.QUIZ_SURAH_NAME || 'يس';
+const SURAH_LABEL = `سورة ${SURAH_NAME}`;
+const SURAH_SLUG = SURAH_NAME === 'الرحمن' ? 'الرحمن' : 'يس';
 const rawQuestions = window.QUIZ_QUESTIONS;
 
 
@@ -120,7 +123,7 @@ function renderIntro(){
   content.innerHTML = `
     <div class="intro">
       <h2>✦ بسم الله نبدأ ✦</h2>
-      <p>قبل أن تبدأ اختبار سورة يس، اكتب اسمك ليظهر في نتيجتك النهائية:</p>
+      <p>قبل أن تبدأ اختبار ${SURAH_LABEL}، اكتب اسمك ليظهر في نتيجتك النهائية:</p>
       <input type="text" id="nameInput" class="name-input" placeholder="اكتب اسمك هنا" maxlength="30">
       <p class="keyboard-hint">💡 يمكنك استخدام لوحة المفاتيح: أرقام 1-4 أو حروف أ ب ج د للإجابة، و Enter للتأكيد والانتقال</p>
       <div class="controls" style="justify-content:center;">
@@ -284,7 +287,7 @@ function showResult(){
   if(finalScore >= 90){
     emoji = '🌟';
     title = 'ممتاز، بارك الله فيك!';
-    msg = 'حفظٌ متقن وفهمٌ عميق لآيات سورة يس. أنت على الطريق الصحيح، فاستمر في المراجعة الدائمة، وجعل الله هذه السورة نوراً لك في الدنيا والآخرة.';
+    msg = 'حفظٌ متقن وفهمٌ عميق لآيات ${SURAH_LABEL}. أنت على الطريق الصحيح، فاستمر في المراجعة الدائمة، وجعل الله هذه السورة نوراً لك في الدنيا والآخرة.';
   } else if(finalScore >= 70){
     emoji = '✨';
     title = 'جيد جدًا، أحسنت!';
@@ -292,11 +295,11 @@ function showResult(){
   } else if(finalScore >= 50){
     emoji = '📖';
     title = 'جيد، وتحتاج إلى مزيد من المراجعة';
-    msg = 'بداية طيبة، لكن سورة يس تستحق منك وقتاً أطول في الحفظ والتدبر. اقرأها بترتيل واستمع إليها من قارئ متقن، وستجد تحسناً ملحوظاً في المرة القادمة.';
+    msg = 'بداية طيبة، لكن ${SURAH_LABEL} تستحق منك وقتاً أطول في الحفظ والتدبر. اقرأها بترتيل واستمع إليها من قارئ متقن، وستجد تحسناً ملحوظاً في المرة القادمة.';
   } else {
     emoji = '🕌';
     title = 'لا بأس، البداية دائماً هي الأصعب';
-    msg = 'لا تحزن، فكل حافظ للقرآن بدأ من الصفر. خصص وقتاً يومياً لتلاوة سورة يس وتكرارها، وستجد نفسك قريباً تحفظها عن ظهر قلب بإذن الله تعالى.';
+    msg = 'لا تحزن، فكل حافظ للقرآن بدأ من الصفر. خصص وقتاً يومياً لتلاوة ${SURAH_LABEL} وتكرارها، وستجد نفسك قريباً تحفظها عن ظهر قلب بإذن الله تعالى.';
   }
 
   lastResult = {finalScore, correctCount, wrongCount, title, msg, emoji};
@@ -406,7 +409,7 @@ function downloadQuestionsPDF(){
   pdfContainer.innerHTML = `
     <div style="text-align: center; margin-bottom: 20px;">
       <div style="font-size: 22px; font-weight: bold; color: #073331; margin-bottom: 6px;">
-        ✦ أسئلة اختبار سورة يس ✦
+        ✦ أسئلة اختبار ${SURAH_LABEL} ✦
       </div>
       <div style="font-size: 14px; color: #b5563a; margin-bottom: 4px;">
         25 سؤالاً مع الإجابات الصحيحة
@@ -435,7 +438,7 @@ function downloadQuestionsPDF(){
 
   const opt = {
     margin:       [8, 8, 8, 8],
-    filename:     'أسئلة-اختبار-سورة-يس.pdf',
+    filename:     'أسئلة-اختبار-${SURAH_SLUG}.pdf',
     image:        {type: 'jpeg', quality: 0.98},
     html2canvas:  {scale: 2, useCORS: true, letterRendering: true},
     jsPDF:        {unit: 'mm', format: 'a4', orientation: 'portrait'},
